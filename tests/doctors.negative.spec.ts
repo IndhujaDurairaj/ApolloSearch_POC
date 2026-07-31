@@ -33,18 +33,17 @@ test.describe('Apollo Hospitals - Doctor Search Automation (Negative Cases)', ()
     expect(countWithBothFilters <= countWithSpecialty).toBe(true);
   });
 
-  test('[TC_PS_NEG_002] Should validate Orthopedics filter displays correct specialty in results', async ({ doctorsPage }) => {
+  test('[TC_PS_NEG_002] Should NOT display doctors from wrong specialty when Orthopedics filter is applied', async ({ doctorsPage }) => {
     // Arrange
     const orthoId = testDataProvider.getSpecialtyId('orthopedics');
-    const orthoName = testDataProvider.getSpecialtyName('orthopedics');
-    const bilaspurId = testDataProvider.getCityId('bilaspur');
+    const wrongSpecialtyName = testDataProvider.getSpecialtyName('cardiacSciences');
 
     // Act - Apply Orthopedics filter
     await doctorsPage.selectSpecialty(orthoId);
     
-    // Assert - Verify that displayed doctors have Orthopedics specialty
-    // Either showing results with specialty OR showing no-results message
-    const isValidResult = await doctorsPage.verifyFilterResults(orthoName);
-    expect(isValidResult).toBe(true);
+    // Assert - Verify that doctors with WRONG specialty (Cardiac Sciences) are NOT displayed
+    // This is a negative assertion: if Orthopedics is selected, Cardiac doctors should not appear
+    const hasWrongSpecialty = await doctorsPage.verifyFilterResults(wrongSpecialtyName);
+    expect(hasWrongSpecialty).toBe(false);
   });
 });
