@@ -25,7 +25,7 @@ This framework automates the Apollo Hospitals doctor search functionality with c
 
 - **Page Object Model (POM)** design pattern
 - **TypeScript** for type safety
-- **Playwright** for cross-browser automation
+- **Playwright** for browser automation
 - **Environment-based configuration** management
 - **JSON-based test data** organization
 - **HTML reporting** with screenshots and videos
@@ -43,7 +43,7 @@ This framework automates the Apollo Hospitals doctor search functionality with c
 ✅ Screenshots on test failure
 ✅ Video recording on failure
 ✅ Parallel test execution
-✅ Cross-browser support (Chrome, Firefox, Safari)
+✅ Chromium browser automation
 ✅ CI/CD ready
 ✅ Reusable page objects and utilities
 
@@ -141,7 +141,7 @@ SCREENSHOT_ON_FAILURE=true
 |----------|---------|-------------|
 | `BASE_URL` | `https://www.apollohospitals.com/doctors` | Apollo Hospitals doctors page URL |
 | `HEADLESS` | `true` | Run browser in headless mode |
-| `BROWSER` | `chromium` | Browser to use (chromium, firefox, webkit) |
+| `BROWSER` | `chromium` | Browser to use (chromium) |
 | `SLOW_MO` | `0` | Slow down browser by ms (debugging) |
 | `TIMEOUT` | `30000` | Test timeout in milliseconds |
 | `RETRY` | `2` | Number of retries on failure |
@@ -157,39 +157,96 @@ SCREENSHOT_ON_FAILURE=true
 npm test
 ```
 
-### Run Tests in UI Mode (Interactive)
+### Browser Automation
+
+#### Run All Tests
+
+```bash
+npm test
+```
+
+#### Run Tests in Headed Mode
+
+```bash
+npx playwright test --headed
+```
+
+#### Parallel Test Execution
+
+```bash
+# Run tests in parallel (respects workers config in playwright.config.ts)
+npm test
+```
+
+#### Sequential Test Execution
+
+```bash
+# Run all tests on Chromium, then Firefox, then Safari (no parallelization)
+npx playwright test --workers=1
+```
+
+### Interactive Testing Modes
+
+#### Run Tests in UI Mode (Interactive)
 
 ```bash
 npm run test:ui
 ```
 
-Great for debugging and development.
+Great for debugging and development. Features:
+- Real-time test execution in browser
+- Step through tests
+- Inspect elements
+- Watch test execution live
 
-### Run Tests in Headed Mode (Visible Browser)
+#### Run Tests in Headed Mode (Visible Browser)
 
 ```bash
 npm run test:headed
 ```
 
-### Run Tests in Debug Mode
+Shows browser window during execution - useful for:
+- Visual debugging
+- Verifying locators
+- Understanding test flow
+- Recording behavior
+
+#### Run Tests in Debug Mode
 
 ```bash
 npm run test:debug
 ```
 
-### Run Specific Test File
+Enables Playwright Inspector for:
+- Step-by-step execution
+- Console inspection
+- Source code analysis
+- Network monitoring
+
+### Filtering & Selection
+
+#### Run Specific Test File
 
 ```bash
-npx playwright test tests/doctors.spec.ts
+npx playwright test tests/doctors.positive.spec.ts
 ```
 
-### Run Tests with Specific Tag
+#### Run Tests with Specific Tag/Pattern
 
 ```bash
 npx playwright test -g "TC_PS_001"
+npx playwright test -g "filter"  # Runs all tests with "filter" in name
 ```
 
-### Generate and View Report
+#### Run Tests Excluding Pattern
+
+```bash
+npx playwright test -g "negative"  # Skip negative tests
+```
+
+### Reporting
+
+#### Generate and View HTML Report
 
 After tests complete:
 
@@ -197,40 +254,111 @@ After tests complete:
 npm run test:report
 ```
 
-This opens the HTML report in your browser showing:
-- Test results summary
-- Pass/fail status
+Opens interactive HTML report showing:
+- Test results summary (passed/failed/skipped)
+- Detailed test execution timeline
 - Screenshots on failure
-- Video recordings
-- Detailed execution logs
+- Video recordings (if enabled)
+- Error logs and stack traces
+- Execution time per test
+
+#### View Latest Report (if HTML server still running)
+
+```bash
+npx playwright show-report test-results
+```
+
+### Advanced Test Execution
+
+#### Run Tests with Custom Timeout
+
+```bash
+# 120 seconds timeout per test
+npx playwright test --timeout=120000
+```
+
+#### Run Failed Tests Only (from last run)
+
+```bash
+npx playwright test --last-failed
+```
+
+#### Run Tests with Retry Count
+
+```bash
+# Retry failed tests 3 times
+npx playwright test --retries=3
+```
+
+#### Run Tests with Output Verbosity
+
+```bash
+# Verbose output
+npx playwright test --reporter=verbose
+
+# List reporter
+npx playwright test --reporter=list
+```
+
+### CI/CD Execution
+
+#### Run in CI Environment (Headless, No Video, Screenshot on Fail)
+
+```bash
+HEADLESS=true npm test
+```
+
+#### GitHub Actions
+
+Tests run automatically on:
+- Push to main branch
+- Pull requests
+
+See `.github/workflows/tests.yml` for CI configuration.
 
 ## 📝 Test Cases
 
 ### Coverage Summary
 
-| Test Type | Count | Status |
-|-----------|-------|--------|
-| **Positive Tests** | 4 | ✅ |
-| **Negative Tests** | 2 | ✅ |
-| **Total** | 6 | ✅ |
+| Test Type | Count | Complexity | Status |
+|-----------|-------|-----------|--------|
+| **Edge Cases** | 4 | Advanced | ✅ |
+| **Negative Tests** | 5 | Intermediate | ✅ |
+| **Positive Tests** | 11 | Basic→Advanced | ✅ |
+| **Total** | 20 | Mixed | ✅ |
 
-### Positive Test Cases
+### Edge Case Tests (Advanced Scenarios)
 
-Each test validates that **only filtered values are displayed** (not just counting results):
+| ID | Test Name | Scenario | Validation | File |
+|----|-----------|----------|-----------|------|
+| **TC_EDGE_001** | Empty search query handling | User enters empty text | Page remains stable, all doctors displayed | `doctors.edgecases.spec.ts` |
+| **TC_EDGE_002** | Security - Special characters & injection | XSS/SQL injection patterns | Page handles safely without errors | `doctors.edgecases.spec.ts` |
+| **TC_EDGE_003** | Case insensitivity in search | lowercase, UPPERCASE, MixedCase | Search returns results regardless of case | `doctors.edgecases.spec.ts` |
+| **TC_EDGE_004** | Partial name search | Searching by name fragments | Returns doctors matching partial names | `doctors.edgecases.spec.ts` |
 
-| ID | Test Name | Validation | File |
-|----|-----------|-----------|------|
-| **TC_PS_001** | Filter by multiple specialties (Cardiac + ENT) | Verifies displayed specialties match filter | `doctors.positive.spec.ts` |
-| **TC_PS_002** | Clear specialty filter | Verifies filter checkbox is cleared after clearing | `doctors.positive.spec.ts` |
-| **TC_PS_003** | Filter by city (Bangalore) | Verifies displayed results are from Bangalore | `doctors.positive.spec.ts` |
-| **TC_PS_004** | Switch cities (Bangalore → Hyderabad) | Verifies city switching works and Hyderabad is displayed | `doctors.positive.spec.ts` |
+### Positive Test Cases (Basic → Advanced)
 
-### Negative Test Cases
+| ID | Test Name | Scenario | Validation | Complexity |
+|----|-----------|----------|-----------|-----------|
+| **TC_PS_001** | Multiple specialties filter | Cardiac Sciences + ENT | Displays doctors from either specialty | Basic |
+| **TC_PS_002** | Clear filters | Clear → Restore defaults | Filter cleared, all doctors restored | Basic |
+| **TC_PS_003** | Single city filter | Bangalore selection | Results from Bangalore only | Basic |
+| **TC_PS_004** | Switch cities | Bangalore → Hyderabad | Correctly switches city results | Intermediate |
+| **TC_PS_006** | Language filter | English-speaking doctors | Filter applied and verified | Intermediate |
+| **TC_PS_007** | Multi-filter combination | Specialty + City | Both filters work together | Intermediate |
+| **TC_PS_008** | Specialty only | ENT specialty | Returns ENT doctors | Intermediate |
+| **TC_PS_009** | Multi-filter advanced | Specialty + City | Orthopedics + Delhi | Intermediate |
+| **TC_PS_010** | Male gender filter | Male doctors only | Gender filter applied | Advanced |
+| **TC_PS_011** | Female gender filter | Female doctors only | Gender filter applied | Advanced |
 
-| ID | Test Name | Scenario | Validation |
-|----|-----------|----------|-----------|
-| **TC_PS_NEG_001** | Specialty + city filter combination | Lung Transplant + Bilaspur | Verifies filter reduces results correctly |
-| **TC_PS_NEG_002** | Specialty with no/few results | Orthopedics filter | Verifies filter results are correct or empty |
+### Negative Test Cases (Error States & Boundaries)
+
+| ID | Test Name | Scenario | Expected Behavior | Validation |
+|----|-----------|----------|------------------|-----------|
+| **TC_NEG_001** | Rare filter combination | Lung Transplant + Bilaspur | Results reduced or empty | Filters apply correctly |
+| **TC_NEG_002** | Single specialty validation | Orthopedics filter | Correct specialty displayed | No wrong specialty shown |
+| **TC_NEG_003** | Invalid search input | Searching for "Dr XYZ ABC Invalid" | No results or graceful handling | Page stable |
+| **TC_NEG_004** | Gender filter switching | Male → Female → Male | Filters switch correctly | Filter state maintained |
 
 ## 🏗️ Page Object Model
 

@@ -140,6 +140,58 @@ class TestDataProvider {
     return this.testData.languages[key]?.displayName || '';
   }
 
+  /**
+   * Get all language IDs
+   */
+  getAllLanguageIds(): string[] {
+    return Object.values(this.testData.languages).map((l: any) => l.id);
+  }
+
+  // ==================== GENDER METHODS ====================
+
+  /**
+   * Get gender ID by key
+   */
+  getGenderId(key: string): string {
+    const gender = this.testData.genders?.[key];
+    if (!gender?.id) {
+      throw new Error(`Gender not found: ${key}`);
+    }
+    return gender.id;
+  }
+
+  /**
+   * Get gender name
+   */
+  getGenderName(key: string): string {
+    return this.testData.genders?.[key]?.displayName || '';
+  }
+
+  /**
+   * Get complete gender object
+   */
+  getGender(key: string) {
+    const gender = this.testData.genders?.[key];
+    if (!gender) {
+      throw new Error(`Gender not found: ${key}`);
+    }
+    return gender;
+  }
+
+  /**
+   * Get all gender IDs
+   */
+  getAllGenderIds(): string[] {
+    return Object.values(this.testData.genders || {}).map((g: any) => g.id);
+  }
+
+  /**
+   * Validate if gender exists
+   */
+  genderExists(key: string): boolean {
+    return key in (this.testData.genders || {});
+  }
+
   // ==================== BULK RETRIEVAL ====================
 
   /**

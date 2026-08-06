@@ -90,6 +90,18 @@
       "displayName": "Kannada"
     }
   },
+  "genders": {
+    "male": {
+      "id": "male",
+      "name": "Male",
+      "displayName": "Male"
+    },
+    "female": {
+      "id": "female",
+      "name": "Female",
+      "displayName": "Female"
+    }
+  },
   "doctors": {
     "validDoctor": "Dr P L Dhingra",
     "invalidDoctor": "Dr XYZ ABC Invalid",

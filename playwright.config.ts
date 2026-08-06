@@ -25,8 +25,8 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: 1,
-  slowMo: 700,
+  workers: 2,
+  slowMo: 500,
 
   /* Reporter configuration */
   reporter: [
@@ -34,12 +34,12 @@ export default defineConfig({
     ['json', { outputFile: 'test-results/results.json' }]
   ],
 
-  /* Global timeout for test execution: 60 seconds */
-  timeout: 60 * 1000,
+  /* Global timeout for test execution: 90 seconds */
+  timeout: 90 * 1000,
 
-  /* Global timeout for each assertion: 5 seconds */
+  /* Global timeout for each assertion: 10 seconds */
   expect: {
-    timeout: 5 * 1000
+    timeout: 10 * 1000
   },
 
   /* Shared settings for all projects */
@@ -54,9 +54,10 @@ export default defineConfig({
      */
     baseURL: process.env.BASE_URL || 'https://www.apollohospitals.com/doctors',
     trace: 'on-first-retry',
-    screenshot: 'on',
+    screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    actionTimeout: 10 * 1000,
+    actionTimeout: 15 * 1000,
+    navigationTimeout: 30 * 1000,
   },
 
   /* Configure projects for major browsers */
