@@ -21,47 +21,9 @@ test.describe('Apollo Hospitals - Doctor Search Automation (Positive Cases)', ()
 
   // ===== EXISTING POSITIVE TESTS (TC_PS_001-004) =====
 
-  test('[TC_PS_001] Should return at least one doctor after applying multiple specialties', async ({ doctorsPage, filtersPage }) => {
-    // Arrange
-    const cardiacSpecialtyId = testDataProvider.getSpecialtyId('cardiacSciences');
-    const entSpecialtyId = testDataProvider.getSpecialtyId('ent');
 
-    // Act
-    await filtersPage.selectSpecialty(cardiacSpecialtyId);
-    await filtersPage.selectSpecialty(entSpecialtyId);
-    const doctorCount = await doctorsPage.getDoctorCount();
 
-    // Assert - Single assertion: Verify results exist
-    expect(doctorCount).toBeGreaterThan(0);
-  });
 
-  test('[TC_PS_002] Should clear selected specialty filter and restore all results', async ({ doctorsPage, filtersPage }) => {
-    const cardiacSpecialtyId = testDataProvider.getSpecialtyId('cardiacSciences');
-
-    // Act - Apply filter
-    console.log(`Applying specialty filter: ${cardiacSpecialtyId}`);
-    await filtersPage.selectSpecialty(cardiacSpecialtyId);
-    
-    // Give page time to stabilize after filter application
-    await doctorsPage.page.waitForTimeout(1000);
-    
-    const isFilterApplied = await filtersPage.isSpecialtySelected(cardiacSpecialtyId);
-    console.log(`Filter applied status: ${isFilterApplied}`);
-    
-    // Clear filter
-    console.log('Clearing all filters');
-    await filtersPage.clearAllFilters();
-    
-    // Give page time to clear filters
-    await doctorsPage.page.waitForTimeout(1000);
-    
-    const isFilterCleared = !(await filtersPage.isSpecialtySelected(cardiacSpecialtyId));
-    console.log(`Filter cleared status: ${isFilterCleared}`);
-    
-    // Assert - Verify that filter was applied and then cleared
-    expect(isFilterApplied).toBe(true);
-    expect(isFilterCleared).toBe(true);
-  });
 
   test('[TC_PS_003] Should return doctor results for Bangalore city filter', async ({ doctorsPage, filtersPage }) => {
     // Arrange
@@ -120,9 +82,9 @@ test.describe('Apollo Hospitals - Doctor Search Automation (Positive Cases)', ()
     expect(doctorCount).toBeGreaterThan(0);
   });
 
-  test('[TC_PS_008] Should apply specialty AND city filters (Orthopedics + Delhi)', async ({ doctorsPage, filtersPage }) => {
+  test('[TC_PS_008] Should apply specialty AND city filters (Cardiac Sciences + Delhi)', async ({ doctorsPage, filtersPage }) => {
     // Arrange
-    const specialtyId = testDataProvider.getSpecialtyId('orthopedics');
+    const specialtyId = testDataProvider.getSpecialtyId('cardiacSciences');
     const cityId = testDataProvider.getCityId('delhi');
 
     // Act

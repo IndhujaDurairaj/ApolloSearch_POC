@@ -80,37 +80,6 @@ export class DoctorsFiltersPage extends BasePage {
   }
 
   /**
-   * Unselect specialty by checkbox
-   */
-  async unselectSpecialty(specialtyId: string): Promise<void> {
-    const checkbox = this.page.locator(`input[name="speciality[${specialtyId}]"]`).first();
-    const checkboxCount = await checkbox.count();
-
-    if (checkboxCount === 0) {
-      throw new Error(`Could not find specialty checkbox for ID: ${specialtyId}`);
-    }
-
-    try {
-      await checkbox.scrollIntoViewIfNeeded();
-      await checkbox.uncheck({ force: true, timeout: 3000 });
-    } catch {
-      await this.page.evaluate((id) => {
-        const input = document.querySelector(`input[name="speciality[${id}]"]`) as HTMLInputElement | null;
-        if (!input) {
-          throw new Error(`Could not find specialty checkbox for ID: ${id}`);
-        }
-        if (input.checked) {
-          input.checked = false;
-          input.dispatchEvent(new Event('change', { bubbles: true }));
-          input.dispatchEvent(new Event('click', { bubbles: true }));
-        }
-      }, specialtyId);
-    }
-
-    await this.waitForElementCountStability(this.doctorCards, 3000);
-  }
-
-  /**
    * Check if specialty is selected
    */
   async isSpecialtySelected(specialtyId: string): Promise<boolean> {
