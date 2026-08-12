@@ -103,7 +103,7 @@ test.describe('Apollo Hospitals - Doctor Search (Edge Cases)', () => {
       // Page should complete the search without errors (may or may not find results)
       // Added longer timeout (5000ms) for partial search to complete
       try {
-        await doctorsPage.page.waitForLoadState('domcontentloaded', { timeout: 5000 }).catch(() => {});
+        await doctorsPage.waitForPageReady(5000).catch(() => {});
       } catch {
         // Timeout is acceptable for edge case partial searches
       }
