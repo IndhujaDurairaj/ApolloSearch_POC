@@ -143,6 +143,16 @@ export class DoctorsFiltersPage extends BasePage {
     );
   }
 
+  /**
+   * Check if a specific city is currently selected in the UI
+   */
+  async isCitySelected(cityValue: string): Promise<boolean> {
+    return await this.page.evaluate((value) => {
+      const select = document.querySelector('select[name="city"]') as HTMLSelectElement | null;
+      return select ? select.value === value : false;
+    }, cityValue);
+  }
+
   // ==================== LANGUAGE FILTER METHODS ====================
 
   /**

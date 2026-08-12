@@ -172,6 +172,13 @@ export class DoctorsPage extends BasePage {
     }
   }
 
+  /**
+   * Wait for the current page state to settle after a navigation-triggering action
+   */
+  async waitForPageReady(timeout = 5000): Promise<void> {
+    await this.page.waitForLoadState('domcontentloaded', { timeout });
+  }
+
   // ==================== PAGINATION METHODS ====================
 
   /**
