@@ -41,22 +41,17 @@ jobs:
           HEADLESS: true
           BROWSER: ${{ matrix.browser }}
 
-      - name: Upload test results
+          - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.browser }}
           path: test-results/
           retention-days: 30
 
-      - name: Upload test results to S3 (optional)
-        if: always()
-        run: |
-          echo "Test results available in artifacts"
-
       - name: Publish test report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: html-report-${{ matrix.browser }}
           path: test-results/index.html
